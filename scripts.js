@@ -13,5 +13,5 @@ root.on('child_added', function (snapshot) {
 	jQuery('<div/>', {
 		id: elID,
 		text: message
-	}).addClass('msg').hide().appendTo('#list').fadeIn();
+	}).addClass('msg').hide().prependTo('#list').slideDown().fadeIn();
 });
