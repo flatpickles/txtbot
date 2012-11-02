@@ -20,7 +20,9 @@ def handle_sms():
   if not txt:
     return "No data received!"
   reply = get_entry()
-  add_entry(txt, request.values.get('From', None))
+  # create a thead to add it (so we don't timeout)
+  t = Thread(target=add_entry, args=(txt, request.values.get('From', None),))
+  t.start()
   # form response
   resp = twilio.twiml.Response()
   if reply:
