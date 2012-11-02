@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, g
 import twilio.twiml, requests, json, time, sqlite3
 
 DATABASE = "messages.db"
-FIREBASE = "https://gamma.firebase.com/overheard"
+FIREBASE = "https://gamma.firebase.com/overheard.json"
 app = Flask(__name__)
 
 @app.before_request
@@ -50,7 +50,7 @@ def add_entry(entry, origin):
   g.db.commit()
   # add to Firebase
   payload = {'time': timestamp, 'origin': origin, 'body': entry}
-  requests.post(FIREBASE + ".json", data=json.dumps(payload))
+  requests.post(FIREBASE, data=json.dumps(payload))
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=6288, debug=True)
