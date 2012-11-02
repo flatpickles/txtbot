@@ -16,14 +16,15 @@ def db_shutdown():
 def remove_entry(with_text):
   global db
   # remove all in firebase
-  fb_nodes = firebase_find(with_text)
-  for n in fb_nodes:
-    requests.delete(FIREBASE + "/" + n + ".json")
+  # fb_nodes = firebase_find(with_text)
+  # for n in fb_nodes:
+  #   requests.delete(FIREBASE + "/" + n + ".json")
   # remove all in sqlite
   cur = db.cursor()
-  cur.execute("select count(*) from entries where text like '%?%'", with_text)
+  cur.execute("select count(*) from entries where text like '%?%'", [with_text])
   db_num = int(cur.fetchone()[0])
-  cur.execute("delete from entries where text like '%?%'", with_text)
+  cur.execute("delete from entries where text like '%?%'", [with_text])
+  cur.commit()
   return [len(fb_nodes), db_num]
 
 def firebase_find(text):
@@ -31,6 +32,10 @@ def firebase_find(text):
   r = requests.get(FIREBASE + ".json")
   j = json.loads(r.text)
   for k, v in j.iteritems():
-    if text in v[u'body']:
+    if text.lower() in v[u'body'].lower():
       returns.append(k)
   return returns
+
+db_connect()
+print remove_entry("tcp")
+db_shutdown()

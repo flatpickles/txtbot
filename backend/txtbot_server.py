@@ -14,14 +14,6 @@ def is_valid(s):
      and not any(w in s.lower() for w in blacklist) \
      and len(s) >= min_length
 
-@app.before_request
-def before():
-  g.db = sqlite3.connect(DATABASE)
-
-@app.teardown_request
-def teardown(exception):
-  g.db.close()
-
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
   # receive and handle incoming data
@@ -39,14 +31,17 @@ def handle_sms():
   return str(resp)
 
 def get_entry():
-  cur = g.db.cursor()
+  db = sqlite3.connect(DATABASE)
+  cur = db.cursor()
   # check if table has entries
   cur.execute("select case when exists (select * from entries limit 1) then 1 else 0 end")
   if not int(cur.fetchone()[0]):
     return None
   # get a random entry
   cur.execute("select text from entries order by random() limit 1")
-  return str(cur.fetchone()[0])
+  r = str(cur.fetchone()[0])
+  db.close()
+  return r
 
 def add_entry(entry, origin):
   timestamp = round(time.time())
