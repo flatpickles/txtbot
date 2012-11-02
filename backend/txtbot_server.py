@@ -41,10 +41,9 @@ def get_entry():
   return str(cur.fetchone()[0])
 
 def add_entry(entry, origin):
+  timestamp = round(time.time())
   # get DB in this thread context
   db = sqlite3.connect(DATABASE)
-
-  timestamp = round(time.time())
   cur = db.cursor()
   # if exists in sqlite db, exit
   cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", [entry])
