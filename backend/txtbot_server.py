@@ -40,7 +40,7 @@ def add_entry(entry, origin):
   timestamp = round(time.time())
   cur = g.db.cursor()
   # if exists in sqlite db, exit
-  cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", entry)
+  cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", [entry])
   if int(cur.fetchone()[0]):
     return
   # add to sqlite DB
