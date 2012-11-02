@@ -11,7 +11,7 @@ min_length = 3
 
 def is_valid(s):
   return all(ord(c) < 128 for c in s) \
-     and not any(w in s for w in blacklist) \
+     and not any(w in s.lower() for w in blacklist) \
      and len(s) >= min_length
 
 @app.before_request
