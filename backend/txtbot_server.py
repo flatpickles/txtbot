@@ -6,6 +6,14 @@ DATABASE = "messages.db"
 FIREBASE = "https://gamma.firebase.com/overheard.json"
 app = Flask(__name__)
 
+blacklist = ["nichols"]
+min_length = 3
+
+def is_valid(s):
+  return all(ord(c) < 128 for c in s) \
+     and not any(w in s for w in blacklist) \
+     and len(s) >= min_length
+
 @app.before_request
 def before():
   g.db = sqlite3.connect(DATABASE)
@@ -47,7 +55,7 @@ def add_entry(entry, origin):
   cur = db.cursor()
   # if exists in sqlite db, exit
   cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", [entry])
-  if int(cur.fetchone()[0]):
+  if int(cur.fetchone()[0]) or not is_valid(entry):
     return
   # add to sqlite DB
   db.execute('insert into entries (text, origin, time) values (?, ?, ?)',
