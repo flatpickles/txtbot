@@ -1,2 +1,2 @@
 > maybe transition out of firebase
-> chmod txtbot on server
+> refactor so backend isn't available by web

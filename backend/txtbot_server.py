@@ -38,13 +38,18 @@ def get_entry():
 
 def add_entry(entry, origin):
   timestamp = round(time.time())
-  # add to Firebase
-  payload = {'time': timestamp, 'origin': origin, 'body': entry}
-  requests.post("https://gamma.firebase.com/overheard.json", data=json.dumps(payload))
+  cur = g.db.cursor()
+  # if exists in sqlite db, exit
+  cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", entry)
+  if int(cur.fetchone()[0]):
+    return
   # add to sqlite DB
   g.db.execute('insert into entries (text, origin, time) values (?, ?, ?)',
                [entry, origin, timestamp])
   g.db.commit()
+  # add to Firebase
+  payload = {'time': timestamp, 'origin': origin, 'body': entry}
+  requests.post("https://gamma.firebase.com/overheard.json", data=json.dumps(payload))
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=6288, debug=True)
