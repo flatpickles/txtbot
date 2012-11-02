@@ -22,7 +22,7 @@ def handle_sms():
     return "No data received!"
   reply = get_entry()
   # create a thead to add it (so we don't timeout)
-  t = Thread(target=add_entry, args=(txt, request.values.get('From', None), g.db,))
+  t = Thread(target=add_entry, args=(txt, request.values.get('From', None),))
   t.start()
   # form response
   resp = twilio.twiml.Response()
@@ -40,7 +40,10 @@ def get_entry():
   cur.execute("select text from entries order by random() limit 1")
   return str(cur.fetchone()[0])
 
-def add_entry(entry, origin, db):
+def add_entry(entry, origin):
+  # get DB in this thread context
+  db = sqlite3.connect(DATABASE)
+
   timestamp = round(time.time())
   cur = db.cursor()
   # if exists in sqlite db, exit
@@ -54,6 +57,9 @@ def add_entry(entry, origin, db):
   # add to Firebase
   payload = {'time': timestamp, 'origin': origin, 'body': entry}
   requests.post(FIREBASE, data=json.dumps(payload))
+
+  # close DB
+  db.close()
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=6288, debug=True)
