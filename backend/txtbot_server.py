@@ -1,13 +1,28 @@
-from flask import Flask, request, redirect, g
-import twilio.twiml, requests, json, time, sqlite3
+from flask import Flask, request, redirect, g, jsonify
+from functools import wraps
+import twilio.twiml, requests, time, sqlite3
 
-### GLOBAL INITIALIZATIONS ###
+### GLOBAL INITIALIZATIONS ETC ###
 
 DATABASE = "messages.db"
 app = Flask(__name__)
 
 blacklist = ["nichols"]
 min_length = 3
+
+# allow jsonP
+def jsonp(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        callback = request.args.get('callback', False)
+        if callback:
+            data = str(func(*args, **kwargs).data)
+            content = str(callback) + '(' + data + ')'
+            mimetype = 'application/javascript'
+            return current_app.response_class(content, mimetype=mimetype)
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
 
 ### REQUEST METHODS ###
 
@@ -35,13 +50,15 @@ def handle_sms():
   return str(resp)
 
 @app.route("/count", methods=['GET', 'POST'])
+@jsonp
 def serve_count():
   cur = g.db.cursor()
   cur.execute("select count(*) from entries")
-  count = str(cur.fetchone()[0])
-  return count
+  count = int(cur.fetchone()[0])
+  return jsonify({'count': count})
 
 @app.route("/entries", methods=['GET', 'POST'])
+@jsonp
 def serve_messages():
   # params
   to_get = int(request.values.get('n', '10'))
@@ -56,14 +73,14 @@ def serve_messages():
 
   # parse data
   for row in vals:
-    data[int(row[0])] = {
+    data[row[0]] = {
       'text': row[1],
       'origin': row[2],
       'time': row[3]
     }
 
   # return data
-  return json.dumps(data, sort_keys=True)
+  return jsonify(data)
 
 ### HELPER METHODS ###
 
