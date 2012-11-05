@@ -1,3 +1,4 @@
+/*
 // reference to Firebase root
 var root = new Firebase('https://gamma.firebase.com/overheard');
 
@@ -14,4 +15,16 @@ root.on('child_added', function (snapshot) {
 		id: elID,
 		text: message
 	}).addClass('msg').hide().prependTo('#list').slideDown().fadeIn();
+});
+*/
+
+$(document).ready(function() {
+	$.getJSON("http://mattnichols.net:6288/entries?jsoncallback=?", {
+		'n': 5
+	}, function(data) {
+		$.each(data.items, function(i,item) {
+			alert(item);
+		});
+	});
+	
 });

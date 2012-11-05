@@ -11,18 +11,18 @@ blacklist = ["nichols"]
 min_length = 3
 
 # allow jsonP
-def jsonp(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        callback = request.args.get('callback', False)
-        if callback:
-            data = str(func(*args, **kwargs).data)
-            content = str(callback) + '(' + data + ')'
-            mimetype = 'application/javascript'
-            return current_app.response_class(content, mimetype=mimetype)
-        else:
-            return func(*args, **kwargs)
-    return decorated_function
+def jsonp(f):
+  global app
+  """Wraps JSONified output for JSONP"""
+  @wraps(f)
+  def decorated_function(*args, **kwargs):
+    callback = request.args.get('callback', False)
+    if callback:
+      content = str(callback) + '(' + str(f(*args,**kwargs).data) + ')'
+      return app.response_class(content, mimetype='application/javascript')
+    else:
+      return f(*args, **kwargs)
+  return decorated_function
 
 ### REQUEST METHODS ###
 
