@@ -39,6 +39,32 @@ def serve_count():
   db.close()
   return count
 
+@app.route("/entries", methods=['GET', 'POST'])
+def serve_messages():
+  # params
+  to_get = int(request.values.get('n', '10'))
+  lower_time_bound = int(request.values.get('after', '0'))
+  upper_time_bound = int(request.values.get('before', '999999999999'))
+
+  # get data
+  db = sqlite3.connect(DATABASE)
+  cur = db.cursor()
+  data = {}
+  cur.execute("select * from entries where time > ? and time < ? order by time desc limit ?", [lower_time_bound, upper_time_bound, to_get])
+  vals = cur.fetchall()
+  db.close()
+
+  # parse data
+  for row in vals:
+    data[int(row[0])] = {
+      'text': row[1],
+      'origin': row[2],
+      'time': row[3]
+    }
+
+  # return data
+  return json.dumps(data, sort_keys=True)
+
 def get_entry():
   db = sqlite3.connect(DATABASE)
   cur = db.cursor()
