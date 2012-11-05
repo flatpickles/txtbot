@@ -30,6 +30,15 @@ def handle_sms():
     resp.sms(reply)
   return str(resp)
 
+@app.route("/count", methods=['GET', 'POST'])
+def serve_count():
+  db = sqlite3.connect(DATABASE)
+  cur = db.cursor()
+  cur.execute("select count(*) from entries")
+  count = str(cur.fetchone()[0])
+  db.close()
+  return count
+
 def get_entry():
   db = sqlite3.connect(DATABASE)
   cur = db.cursor()
