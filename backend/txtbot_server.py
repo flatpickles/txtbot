@@ -5,15 +5,17 @@ import twilio.twiml, requests, time, sqlite3, json
 ### GLOBAL INITIALIZATIONS ETC ###
 
 DATABASE = "messages.db"
+ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
+roulette = False
 blacklist = ["nichols"]
 min_length = 3
 
 # allow jsonP
+# mostly via https://gist.github.com/1094140
 def jsonp(f):
   global app
-  """Wraps JSONified output for JSONP"""
   @wraps(f)
   def decorated_function(*args, **kwargs):
     callback = request.args.get('callback', False)
@@ -28,7 +30,11 @@ def jsonp(f):
 
 @app.before_request
 def before():
-  g.db = sqlite3.connect(DATABASE)
+  global roulette
+  if roulette:
+    g.db = sqlite3.connect(ROULETTE_DATABASE)
+  else:
+    g.db = sqlite3.connect(DATABASE)
 
 @app.teardown_request
 def teardown(exception):
@@ -36,17 +42,22 @@ def teardown(exception):
 
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
+  global roulette
   # receive and handle incoming data
   txt = request.values.get('Body', None)
   if not txt:
     return "No data received!"
-  reply = get_entry()
+  origin = request.values.get('From', None)
+  reply = get_recent(origin) if roulette else get_random()
   # add it
-  add_entry(txt, request.values.get('From', None))
+  add_entry(txt, origin)
   # form response
   resp = twilio.twiml.Response()
   if reply:
-    resp.sms(reply)
+    if roulette:
+      resp.sms(txt, to=reply['origin'])
+    else:
+      resp.sms(reply)
   return str(resp)
 
 @app.route("/count", methods=['GET', 'POST'])
@@ -85,11 +96,13 @@ def serve_messages():
 ### HELPER METHODS ###
 
 def is_valid(s):
-  return all(ord(c) < 128 for c in s) \
-     and not any(w in s.lower() for w in blacklist) \
-     and len(s) >= min_length
+  global roulette
+  return roulette \
+      or all(ord(c) < 128 for c in s) \
+      and not any(w in s.lower() for w in blacklist) \
+      and len(s) >= min_length
 
-def get_entry():
+def get_random():
   cur = g.db.cursor()
   # check if table has entries
   cur.execute("select case when exists (select * from entries limit 1) then 1 else 0 end")
@@ -99,6 +112,17 @@ def get_entry():
   cur.execute("select text from entries order by random() limit 1")
   r = str(cur.fetchone()[0])
   return r
+
+def get_recent(origin):
+  cur = g.db.cursor()
+  # check if table has entries
+  cur.execute("select case when exists (select * from entries limit 1) then 1 else 0 end")
+  if not int(cur.fetchone()[0]):
+    return None
+  # get the most recent entry not from origin
+  cur.execute("select text,origin from entries where origin<>? order by time desc limit 1", [origin])
+  e = cur.fetchone()
+  return None if not e else {'text': e[0], 'origin': e[1]}
 
 def add_entry(entry, origin):
   timestamp = round(time.time())
