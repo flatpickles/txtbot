@@ -1,5 +1,4 @@
 from flask import Flask, request, redirect, g
-from threading import Thread
 import twilio.twiml, requests, json, time, sqlite3
 
 ### GLOBAL INITIALIZATIONS ###
