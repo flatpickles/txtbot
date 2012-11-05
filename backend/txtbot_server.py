@@ -80,7 +80,7 @@ def serve_messages():
     }
 
   # return data
-  return jsonify(sorted(data.iteritems(), key=lambda x: int(x[0])))
+  return jsonify(sorted(data.iteritems(), key=lambda x: int(x[1])))
 
 ### HELPER METHODS ###
 
