@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, g, jsonify
 from functools import wraps
-import twilio.twiml, requests, time, sqlite3
+import twilio.twiml, requests, time, sqlite3, json
 
 ### GLOBAL INITIALIZATIONS ETC ###
 
@@ -80,7 +80,7 @@ def serve_messages():
     }
 
   # return data
-  return jsonify(sorted(data.iteritems(), key=lambda x: int(x[1])))
+  return jsonify(data)
 
 ### HELPER METHODS ###
 
