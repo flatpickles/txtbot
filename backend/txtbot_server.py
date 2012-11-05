@@ -80,7 +80,7 @@ def serve_messages():
     }
 
   # return data
-  return jsonify(data)
+  return jsonify(sorted(data.iteritems()))
 
 ### HELPER METHODS ###
 
