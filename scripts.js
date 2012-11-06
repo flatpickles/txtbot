@@ -69,7 +69,7 @@ function initialize() {
 		slide_in = true;
 	});
 	
-	setInterval(check_for_new, 5000);
+	setInterval(check_for_new, 300000);
 };
 
 function update_stats() {
