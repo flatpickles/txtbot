@@ -39,7 +39,8 @@ def before():
 
 @app.teardown_request
 def teardown(exception):
-  g.db.close()
+  if hasattr(g, 'db'):
+    g.db.close()
 
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
