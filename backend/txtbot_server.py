@@ -9,6 +9,7 @@ ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
 roulette = True
+offset = 3 # delay 3 texts in response
 blacklist = ["nichols"]
 min_length = 3
 
@@ -87,11 +88,11 @@ def serve_messages():
   # get data
   cur = g.db.cursor()
   data = {}
-  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get])
+  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get + offset])
   vals = cur.fetchall()
 
   # parse data
-  for row in vals:
+  for row in vals[offset:]:
     # hash the number for anonymity
     h = hashlib.sha1()
     h.update(str(row[2]))

@@ -42,10 +42,13 @@ function initialize(n) {
 
 function update_stats() {
 	// load number of texts
-	$.getJSON("http://mattnichols.net:6288/count?callback=?", function(data) {
+	$.getJSON("http://mattnichols.net:6288/text_count?callback=?", function(data) {
 		$('#num_texts').html(data['count']);
 	});
 	// and number of numbers
+	$.getJSON("http://mattnichols.net:6288/number_count?callback=?", function(data) {
+		$('#num_numbers').html(data['count']);
+	});
 };
 
 function load_handler(key, value) {
