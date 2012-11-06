@@ -8,7 +8,7 @@ DATABASE = "messages.db"
 ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
-roulette = True
+roulette = False
 blacklist = ["nichols"]
 min_length = 3
 
@@ -73,13 +73,13 @@ def serve_count():
 def serve_messages():
   # params
   to_get = int(request.values.get('n', '10'))
-  lower_time_bound = int(request.values.get('after', '0'))
-  upper_time_bound = int(request.values.get('before', '999999999999'))
+  lower_bound = int(request.values.get('after', '-1'))
+  upper_bound = int(request.values.get('before', '999999999999'))
 
   # get data
   cur = g.db.cursor()
   data = {}
-  cur.execute("select * from entries where time > ? and time < ? order by time desc limit ?", [lower_time_bound, upper_time_bound, to_get])
+  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get])
   vals = cur.fetchall()
 
   # parse data
