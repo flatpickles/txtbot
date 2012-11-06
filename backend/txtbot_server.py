@@ -9,7 +9,7 @@ ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
 roulette = True
-offset = 3 # delay 3 texts in response
+offset = 1 # delay 3 texts in response
 blacklist = ["nichols"]
 min_length = 3
 
