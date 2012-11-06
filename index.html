@@ -1,7 +1,7 @@
 <html>
 
 	<head>
-		<title>txtbot</title>
+		<title>TXTBOT</title>
 		
 		<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
 		<script type='text/javascript' src='scripts.js'></script>
@@ -12,14 +12,19 @@
 	
 	<body>
 		<div id="wrapper">
-			<div class="header">
-				txtbot
+			<div id="header">
+				TXTBOT
 			</div>
-			<div id="list">
-				<div id="loading" class="msg">
-					Waiting for data...
-				</div>
+			<div id="subheader">
+				<span id="num_texts">0</span> texts from <span id="num_numbers">0</span> numbers<br/>
+				text <span id="number">859-TXTBOT2</span> to join in
 			</div>
+			
+			<div id="loading" class="msg">
+				[waiting for data]
+			</div>
+			
+			<div id="list"></div>
 		</div>
 	</body>
 

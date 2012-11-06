@@ -1,27 +1,43 @@
+@import url(http://fonts.googleapis.com/css?family=Questrial);
+
 body {
 	text-align: center;
 	padding: 10px;
+	background: #f5fdff;
+	font-family: 'Questrial', sans-serif;
 }
 
 #wrapper {
-	width: 400px;
+	width: 333px;
 	text-align: center;
 	margin-left:auto;
 	margin-right:auto;
 }
 
 #loading {
-	color: #343434;
-	font-style: italic;
+	color: #A0A0A0;
 }
 
-.header {
-	font-size: 2em;
+#header {
+	font-size: 4em;
 	font-weight: bold;
-	font-style: italic;
-	padding-bottom: 5px;
 }
 
-.msg {
-	padding: 5px;
+#subheader {
+	color: #A0A0A0;
+}
+
+#list {
+	padding-top: 20px;
+}
+
+.msg {	display: inline-block;
+	padding: 10px;
+	margin: 5px;
+	border-radius: 20px;
+	-moz-border-radius: 25px; /* Firefox 3.6 and earlier */
+}
+
+.breaker {
+	clear: both;
 }

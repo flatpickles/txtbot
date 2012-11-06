@@ -60,11 +60,19 @@ def handle_sms():
       resp.sms(reply)
   return str(resp)
 
-@app.route("/count", methods=['GET', 'POST'])
+@app.route("/text_count", methods=['GET', 'POST'])
 @jsonp
-def serve_count():
+def serve_text_count():
   cur = g.db.cursor()
   cur.execute("select count(*) from entries")
+  count = int(cur.fetchone()[0])
+  return jsonify({'count': count})
+
+@app.route("/number_count", methods=['GET', 'POST'])
+@jsonp
+def serve_number_count():
+  cur = g.db.cursor()
+  cur.execute("select count(distinct origin) from entries")
   count = int(cur.fetchone()[0])
   return jsonify({'count': count})
 
