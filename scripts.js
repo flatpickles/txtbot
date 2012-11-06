@@ -1,16 +1,47 @@
+var LOAD_NUMBER = 15;
+
 var most_recent = 0;
+var lowest_id = 99999999;
 var slide_in = false;
 
 $(document).ready(function() {
-	initialize(15);
-	setInterval(check_for_new, 5000);
+	// set things up
+	initialize();
 	
+	// update number on hover over subheader
 	$('#subheader').hover(function() {
 		$('#number').html("859-898-2682");
 	}, function() {
 		$('#number').html("859-TXTBOT2");
 	});
+	
+	$('#load_more').click(function() {
+		load_more();
+		return false;
+	});
 });
+
+function load_more() {
+	slide_in = false;
+	// load first n texts
+	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+		'n': LOAD_NUMBER,
+		'before': lowest_id
+	}, function(data) {
+		$('#loading').remove();
+		$.each(data, load_handler);
+		
+		// set to animate in the future
+		slide_in = true;
+		
+		// remove load button if necessary
+		if (data.size < LOAD_NUMBER) {
+			$('#load_more').remove();
+		}
+		
+/* 		console.log(data); */
+	});
+};
 
 
 function check_for_new() {
@@ -24,12 +55,12 @@ function check_for_new() {
 	});
 };
 
-function initialize(n) {
+function initialize() {
 	update_stats();
 	
 	// load first n texts
 	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
-		'n': n
+		'n': LOAD_NUMBER
 	}, function(data) {
 		$('#loading').remove();
 		$.each(data, load_handler);
@@ -38,6 +69,7 @@ function initialize(n) {
 		slide_in = true;
 	});
 	
+	setInterval(check_for_new, 5000);
 };
 
 function update_stats() {
@@ -60,6 +92,7 @@ function load_handler(key, value) {
 	e.css('background', brighten_color(value['color'].substring(1), .77));
 	insert_sorted(e, '.msg', '#list');
 	most_recent = Math.max(most_recent, parseInt(key));
+	lowest_id = Math.min(lowest_id, parseInt(key));
 };
 
 function insert_sorted(el, class_type, container) {
@@ -74,7 +107,7 @@ function insert_sorted(el, class_type, container) {
 	
 	if (all.length) {
 		if (all[curr]) el.insertBefore(all[curr]);
-		else el.insertAfter(all[all.length - 1]);
+		else $(all[all.length - 1]).next().after(el);
 	} else {
 		el.prependTo(container);
 	}

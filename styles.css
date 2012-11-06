@@ -31,11 +31,28 @@ body {
 	padding-top: 25px;
 }
 
-.msg {	display: inline-block;
+.msg {
+	display: inline-block;
 	padding: 10px;
 	margin: 5px;
 	border-radius: 20px;
 	-moz-border-radius: 25px; /* Firefox 3.6 and earlier */
+}
+
+#load_more {
+	border: 3px solid #0000FF;
+	background: #EEEEFF;
+	font-weight: bold;
+	cursor: hand;
+}
+
+#load_more a {
+	text-decoration: none;
+}
+
+#load_more:hover {
+	background: #CCCCFF;
+	text-decoration: underline;
 }
 
 .breaker {
