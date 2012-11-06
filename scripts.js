@@ -30,7 +30,7 @@ function load_handler(key, value) {
 		text: value['text']
 	}).addClass('msg');
 	insert_sorted(e, '.msg', '#list');
-	most_recent = Math.max(most_recent, parseInt(value['time']));
+	most_recent = Math.max(most_recent, parseInt(key));
 };
 
 function insert_sorted(el, class_type, container) {
