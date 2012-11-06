@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, g, jsonify
 from functools import wraps
-import twilio.twiml, requests, time, sqlite3, json
+import twilio.twiml, requests, time, sqlite3, json, hashlib
 
 ### GLOBAL INITIALIZATIONS ETC ###
 
@@ -84,9 +84,14 @@ def serve_messages():
 
   # parse data
   for row in vals:
+    # hash the number for anonymity
+    h = hashlib.sha1()
+    h.update(str(row[2]))
+    color = '#' + str(h.hexdigest()[:6])
+
     data[row[0]] = {
       'text': row[1],
-      'origin': row[2],
+      'color': color,
       'time': row[3]
     }
 
