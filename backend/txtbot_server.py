@@ -8,7 +8,7 @@ DATABASE = "messages.db"
 ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
-roulette = False
+roulette = True
 blacklist = ["nichols"]
 min_length = 3
 
