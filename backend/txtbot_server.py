@@ -81,19 +81,24 @@ def serve_number_count():
 @app.route("/entries", methods=['GET', 'POST'])
 @jsonp
 def serve_messages():
+  cur = g.db.cursor()
+  # most recent ID
+  cur.execute("select id from entries order by time desc limit 1");
+  latest = int(cur.fetchone()[0])
+
   # params
   to_get = int(request.values.get('n', '10'))
   lower_bound = int(request.values.get('after', '-1'))
-  upper_bound = int(request.values.get('before', '999999999999'))
+  upper_bound = int(request.values.get('before', str(latest + 1)))
+  upper_bound = min(latest - offset + 1, upper_bound)
 
   # get data
-  cur = g.db.cursor()
   data = {}
-  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get + offset])
+  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get])
   vals = cur.fetchall()
 
   # parse data
-  for row in vals[offset:]:
+  for row in vals:
     # hash the number for anonymity
     h = hashlib.sha1()
     h.update(str(row[2]))
