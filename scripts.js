@@ -3,6 +3,7 @@ var LOAD_NUMBER = 15;
 var most_recent = 0;
 var lowest_id = 99999999;
 var slide_in = false;
+var loading = true;
 
 $(document).ready(function() {
 	// set things up
@@ -16,44 +17,11 @@ $(document).ready(function() {
 	});
 	
 	$('#load_more').click(function() {
+		if (loading) return false;
 		load_more();
 		return false;
 	});
 });
-
-function load_more() {
-	slide_in = false;
-	// load first n texts
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
-		'n': LOAD_NUMBER,
-		'before': lowest_id
-	}, function(data) {
-		$('#loading').remove();
-		$.each(data, load_handler);
-		
-		// set to animate in the future
-		slide_in = true;
-		
-		// remove load button if necessary
-		if (data.size < LOAD_NUMBER) {
-			$('#load_more').remove();
-		}
-		
-/* 		console.log(data); */
-	});
-};
-
-
-function check_for_new() {
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
-		'n': 10,
-		'after': most_recent
-	}, function(data) {
-		$('#loading').remove();
-		$.each(data, load_handler);
-		update_stats();
-	});
-};
 
 function initialize() {
 	update_stats();
@@ -67,9 +35,42 @@ function initialize() {
 		
 		// set to animate in the future
 		slide_in = true;
+		
+		$('#load_more').fadeIn().css('display', 'inline-block');
+		loading = false;
 	});
 	
 	setInterval(check_for_new, 300000);
+};
+
+function load_more() {
+	slide_in = false;
+	// load first n texts
+	loading = true;
+	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+		'n': LOAD_NUMBER,
+		'before': lowest_id
+	}, function(data) {
+		$('#loading').remove();
+		$.each(data, load_handler);
+		
+		// set to animate in the future
+		slide_in = true;
+		
+		loading = false;
+	});
+};
+
+
+function check_for_new() {
+	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+		'n': 10,
+		'after': most_recent
+	}, function(data) {
+		$('#loading').remove();
+		$.each(data, load_handler);
+		update_stats();
+	});
 };
 
 function update_stats() {

@@ -44,10 +44,17 @@ body {
 	background: #EEEEFF;
 	font-weight: bold;
 	cursor: hand;
+	display: none;
+	color: #0000ff;
 }
 
 #load_more a {
 	text-decoration: none;
+}
+
+#load_more a:active {
+	text-decoration: none;
+	color:inherit;
 }
 
 #load_more:hover {
