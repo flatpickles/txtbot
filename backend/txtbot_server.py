@@ -29,7 +29,7 @@ def jsonp(f):
 
 ### REQUEST METHODS ###
 
-@app.before_request
+# @app.before_request
 def before():
   global roulette
   if roulette:
@@ -37,13 +37,15 @@ def before():
   else:
     g.db = sqlite3.connect(DATABASE)
 
-@app.teardown_request
-def teardown(exception):
+# @app.teardown_request
+# def teardown(exception):
+def teardown():
   if hasattr(g, 'db'):
     g.db.close()
 
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
+  before()
   global roulette
   # receive and handle incoming data
   txt = request.values.get('Body', None)
@@ -60,27 +62,33 @@ def handle_sms():
       resp.sms(txt, to=reply['origin'])
     else:
       resp.sms(reply)
+  teardown()
   return str(resp)
 
 @app.route("/text_count", methods=['GET', 'POST'])
 @jsonp
 def serve_text_count():
+  before()
   cur = g.db.cursor()
   cur.execute("select count(*) from entries")
   count = int(cur.fetchone()[0])
+  teardown()
   return jsonify({'count': count})
 
 @app.route("/number_count", methods=['GET', 'POST'])
 @jsonp
 def serve_number_count():
+  before()
   cur = g.db.cursor()
   cur.execute("select count(distinct origin) from entries")
   count = int(cur.fetchone()[0])
+  teardown()
   return jsonify({'count': count})
 
 @app.route("/entries", methods=['GET', 'POST'])
 @jsonp
 def serve_messages():
+  before()
   cur = g.db.cursor()
   # most recent ID
   cur.execute("select id from entries order by time desc limit 1");
@@ -111,7 +119,12 @@ def serve_messages():
     }
 
   # return data
+  teardown()
   return jsonify(data)
+
+@app.route("/test", methods=['GET', 'POST'])
+def tst():
+  return "server is alive"
 
 ### HELPER METHODS ###
 
