@@ -21,6 +21,13 @@ $(document).ready(function() {
 		load_more();
 		return false;
 	});
+	
+	// navigation
+	$(".nav").click(function() {
+		$(".nav").removeClass('selected');
+		$(this).addClass('selected');
+	});
+	
 });
 
 function initialize() {
