@@ -1,5 +1,10 @@
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+
 from flask import Flask, request, redirect, g, jsonify
 from functools import wraps
+from datetime import datetime
 import twilio.twiml, requests, time, sqlite3, json, hashlib
 
 ### GLOBAL INITIALIZATIONS ETC ###
@@ -29,7 +34,7 @@ def jsonp(f):
 
 ### REQUEST METHODS ###
 
-# @app.before_request
+@app.before_request
 def before():
   global roulette
   if roulette:
@@ -37,20 +42,19 @@ def before():
   else:
     g.db = sqlite3.connect(DATABASE)
 
-# @app.teardown_request
-# def teardown(exception):
-def teardown():
+@app.teardown_request
+def teardown(exception):
   if hasattr(g, 'db'):
     g.db.close()
 
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
-  before()
   global roulette
   # receive and handle incoming data
   txt = request.values.get('Body', None)
   if not txt:
-    return "No data received!"
+    print "%s Received malformed request at root" % get_time_s()
+    return "No data received"
   origin = request.values.get('From', None)
   reply = get_recent(origin) if roulette else get_random()
   # add it
@@ -62,33 +66,30 @@ def handle_sms():
       resp.sms(txt, to=reply['origin'])
     else:
       resp.sms(reply)
-  teardown()
+  print "%s Received SMS: \"%s\", returning with response" % (txt, get_time_s())
   return str(resp)
 
 @app.route("/text_count", methods=['GET', 'POST'])
 @jsonp
 def serve_text_count():
-  before()
   cur = g.db.cursor()
   cur.execute("select count(*) from entries")
   count = int(cur.fetchone()[0])
-  teardown()
+  print "%s Returning request for text_count" % get_time_s()
   return jsonify({'count': count})
 
 @app.route("/number_count", methods=['GET', 'POST'])
 @jsonp
 def serve_number_count():
-  before()
   cur = g.db.cursor()
   cur.execute("select count(distinct origin) from entries")
   count = int(cur.fetchone()[0])
-  teardown()
+  print "%s Returning request for number_count" % get_time_s()
   return jsonify({'count': count})
 
 @app.route("/entries", methods=['GET', 'POST'])
 @jsonp
 def serve_messages():
-  before()
   cur = g.db.cursor()
   # most recent ID
   cur.execute("select id from entries order by time desc limit 1");
@@ -119,12 +120,13 @@ def serve_messages():
     }
 
   # return data
-  teardown()
+  print "%s Returning request for entries" % get_time_s()
   return jsonify(data)
 
-@app.route("/test", methods=['GET', 'POST'])
-def tst():
-  return "server is alive"
+@app.route("/favicon.ico", methods=['GET', 'POST'])
+def favicon():
+  # avoid 404s, return empty
+  return ""
 
 ### HELPER METHODS ###
 
@@ -169,7 +171,18 @@ def add_entry(entry, origin):
                [entry, origin, timestamp])
   g.db.commit()
 
+def get_time_s():
+  d = datetime.now()
+  return "[%d/%d %d:%d]" % (d.day, d.month, d.hour, d.minute)
+
 ### MAIN ###
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=6288, debug=True)
+  try:
+    print "%s ------------ BEGIN ------------" % get_time_s()
+    # run as Tornado server
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(6288)
+    IOLoop.instance().start()
+  except KeyboardInterrupt:
+    print "\n%s ------- KILLED BY USER --------" % get_time_s()
