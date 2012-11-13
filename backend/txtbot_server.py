@@ -14,7 +14,7 @@ ROULETTE_DATABASE = "roulette.db"
 app = Flask(__name__)
 
 roulette = True
-offset = 1 # delay 1 texts in response
+offset = 3 # don't publish the most recent texts
 blacklist = ["nichols"]
 min_length = 3
 
