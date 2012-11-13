@@ -92,7 +92,7 @@ def serve_number_count():
 def serve_messages():
   cur = g.db.cursor()
   # most recent ID
-  cur.execute("select id from entries order by time desc limit 1");
+  cur.execute("select id from entries order by id desc limit 1");
   latest = int(cur.fetchone()[0])
 
   # params
@@ -103,7 +103,7 @@ def serve_messages():
 
   # get data
   data = {}
-  cur.execute("select * from entries where id > ? and id < ? order by time desc limit ?", [lower_bound, upper_bound, to_get])
+  cur.execute("select * from entries where id > ? and id < ? order by id desc limit ?", [lower_bound, upper_bound, to_get])
   vals = cur.fetchall()
 
   # parse data
@@ -155,7 +155,7 @@ def get_recent(origin):
   if not int(cur.fetchone()[0]):
     return None
   # get the most recent entry not from origin
-  cur.execute("select text,origin from entries where origin<>? order by time desc limit 1", [origin])
+  cur.execute("select text,origin from entries where origin<>? order by id desc limit 1", [origin])
   e = cur.fetchone()
   return None if not e else {'text': e[0], 'origin': e[1]}
 
