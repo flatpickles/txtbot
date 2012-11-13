@@ -1,12 +1,24 @@
-var LOAD_NUMBER = 15;
+// constants
+var LOAD_NUMBER = 20;
+var FADEIN_DELAY = 100;
+var FADEOUT_DELAY = 200;
+var CHECK_DELAY = 10000;
 
+// globals
 var most_recent = 0;
 var lowest_id = 99999999;
 var slide_in = false;
 var loading = true;
 
+// best
+var BEST = [
+	[110, 118],
+	[32, 37]
+];
+
 $(document).ready(function() {
 	// set things up
+	$(".body").hide();
 	initialize();
 	
 	// update number on hover over subheader
@@ -17,18 +29,74 @@ $(document).ready(function() {
 	});
 	
 	$('#load_more').click(function() {
-		if (loading) return false;
+		if (loading) return;
 		load_more();
-		return false;
 	});
 	
 	// navigation
 	$(".nav").click(function() {
+		// nav manipulation
 		$(".nav").removeClass('selected');
 		$(this).addClass('selected');
+		// body manipulation
+		var n = $(this).attr('id');
+		n = n.substr(0, n.length - 4);
+		var c = 0;
+		$('.body').fadeOut(FADEOUT_DELAY, function() {
+			if (++c > 2) { // once everything's faded out...
+				$('#' + n).fadeIn(FADEIN_DELAY);
+			}
+		});
 	});
 	
+	var i, j, k;
+	for (i = 0; i < BEST.length; i++) {
+		var low = BEST[i][0];
+		var up = BEST[i][1];
+		// load first n texts
+		$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+			'after': low - 1,
+			'before': up + 1
+		}, function(data) {
+			// find min + max of keys
+			var l, u;
+			var keys = Object.keys(data);
+			for (k = 0; k < keys.length; k++) {
+				if (!l || parseInt(keys[k]) < l) l = keys[k];
+				if (!u || parseInt(keys[k]) > u) u = keys[k];
+			}
+			// add all elements in list
+			var last;
+			for (j = l; j <= u; j++) {
+				if (!data[j]) continue;
+				var e = jQuery('<div/>', {
+					id: j.toString() + '_best',
+					text: data[j]['text']
+				}).addClass('msg');
+				e.css('border', '3px solid ' + data[j]['color']);
+				e.css('background', brighten_color(data[j]['color'].substring(1), .77));
+				e.appendTo('#best');
+				jQuery('<div/>', {
+					class: '.breaker'
+				}).insertAfter(e);
+				// insert tag at top
+				if (j == l) {
+					var d = new Date(data[j]['time'] * 1000);
+					var div = get_divider(d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear().toString().substr(2, 4));
+					div.insertBefore(e);
+					if (!div.is(':first-child')) div.css('margin-top', '30px');
+				}
+			}
+		});
+	}
+	
 });
+
+function get_divider(contents) {
+	var c = jQuery('<div/>').addClass('divider');
+	jQuery('<span/>').addClass('divider_label').html(contents).appendTo(c);
+	return c;
+};
 
 function initialize() {
 	update_stats();
@@ -43,11 +111,11 @@ function initialize() {
 		// set to animate in the future
 		slide_in = true;
 		
-		$('#load_more').fadeIn().css('display', 'inline-block');
+		$('#recent').fadeIn(FADEIN_DELAY);
 		loading = false;
 	});
 	
-	setInterval(check_for_new, 300000);
+	setInterval(check_for_new, CHECK_DELAY);
 };
 
 function load_more() {
@@ -98,7 +166,7 @@ function load_handler(key, value) {
 	}).addClass('msg');
 	e.css('border', '3px solid ' + value['color']);
 	e.css('background', brighten_color(value['color'].substring(1), .77));
-	insert_sorted(e, '.msg', '#list');
+	insert_sorted(e, '.msg', '#recent');
 	most_recent = Math.max(most_recent, parseInt(key));
 	lowest_id = Math.min(lowest_id, parseInt(key));
 };
@@ -136,4 +204,4 @@ function brighten_color(hex, l) {
 		rgb += ("00"+c).substr(c.length);  
 	}  
 	return rgb;  
-}
+};

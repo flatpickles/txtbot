@@ -22,21 +22,55 @@
 			</div>
 			
 			<div id="nav">
-				<div id="left_nav" class="nav">WTF</div>
-				<div id="center_nav" class="nav selected">Recent</div>
-				<div id="right_nav" class="nav">Best</div>
+				<div id="wtf_nav" class="nav">WTF</div>
+				<div id="recent_nav" class="nav selected">Feed</div>
+				<div id="best_nav" class="nav">Best</div>
 			</div>
 			
-			<div id="loading" class="msg">
-				[waiting for data]
+			<div id="wtf" class="body">
+				<p>
+					When you send a SMS to TXTBOT, your message goes to the last person who texted the number. Between two people, it's simply an anonymous chat, but it gets more interesting when a few people are sending messages at the same time.
+				</p>
+				
+				<p>
+					You can use this site to browse through people's interactions; each person is assigned a unique color so you tell different senders apart. The feed is delayed by a few messages to maintain an air of mystery for when you inevitably want to participate. The "best" list is a hand-picked collection of the greatest conversations to-date.
+				</p>
+				
+				<p class="rock_on">
+					Rock on.
+				</p>
+				
 			</div>
 			
-			<div id="list"></div>
-			
-			<div id="load_more" class="msg">
-				<a href="#">load more</a>
+			<div id="recent" class="body">
+				<div id="loading" class="msg">
+					[waiting for data]
+				</div>
+				
+				<div id="load_more" class="msg">
+					load older
+				</div>
 			</div>
+			
+			<div id="best" class="body">
+			</div>
+			
+			
 		</div>
 	</body>
+	
+	<script type="text/javascript">
+	
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-28039552-3']);
+		_gaq.push(['_trackPageview']);
+		
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	
+	</script>
 
 </html>

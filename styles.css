@@ -7,6 +7,30 @@ body {
 	font-family: 'Questrial', sans-serif;
 }
 
+p {
+	padding-bottom: 20px;
+	text-align: justify;
+	text-indent: 20px;
+}
+
+p.rock_on {
+	text-align: center;
+	text-indent: 0px;
+}
+
+a {
+	text-decoration: none;
+	color: #009900;
+}
+
+a:active {
+	color: inherit;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 #wrapper {
 	width: 333px;
 	text-align: center;
@@ -27,61 +51,69 @@ body {
 	color: #A0A0A0;
 }
 
+/****** NAVIGATION ******/
+
 .nav {
 	display: inline-block;
+	width: 40px;
 	border: 3px solid #444444;
 	margin: 0;
 	padding: 10px;
 	margin-top: 10px;
+	margin-bottom: 10px;
 	font-weight: bold;
 	cursor: hand;
 }
 
-#left_nav {
+#wtf_nav {
 	border-bottom-left-radius: 20px;
 	border-top-left-radius: 20px;
 	-moz-border-radius-bottomleft: 20px;
 	-moz-border-radius-topleft: 20px;
 }
 
-#left_nav.selected {
-	background: #FFCCCC;
+#wtf_nav.selected {
+	background: #AAFFFF;
 }
 
-#left_nav:hover:not(.selected) {
-	background: #FFEEEE;
+#wtf_nav:hover:not(.selected) {
+	background: #DDFFFF;
 }
 
-#center_nav {
+#recent_nav {
 
 }
 
-#center_nav.selected {
-	background: #CCFFCC;
+#recent_nav.selected {
+	background: #AAFFAA;
 }
 
-#center_nav:hover:not(.selected) {
-	background: #EEFFEE;
+#recent_nav:hover:not(.selected) {
+	background: #DDFFDD;
 }
 
-#right_nav {
+#best_nav {
 	border-bottom-right-radius: 20px;
 	border-top-right-radius: 20px;
 	-moz-border-radius-bottomright: 20px;
 	-moz-border-radius-topright: 20px;
 }
 
-#right_nav.selected {
-	background: #CCCCFF;
+#best_nav.selected {
+	background: #AAAAFF;
 }
 
-#right_nav:hover:not(.selected) {
-	background: #EEEEFF;
+#best_nav:hover:not(.selected) {
+	background: #DDDDFF;
 }
 
-#list {
-	padding-top: 25px;
+/****** WTF BODY ******/
+
+#wtf {
+	margin-top: 15px;
 }
+
+/****** FEED BODY ******/
 
 .msg {
 	display: inline-block;
@@ -96,17 +128,8 @@ body {
 	background: #EEEEFF;
 	font-weight: bold;
 	cursor: hand;
-	display: none;
+	display: inline-block;
 	color: #0000ff;
-}
-
-#load_more a {
-	text-decoration: none;
-}
-
-#load_more a:active {
-	text-decoration: none;
-	color:inherit;
 }
 
 #load_more:hover {
@@ -116,4 +139,25 @@ body {
 
 .breaker {
 	clear: both;
+}
+
+/****** BEST BODY ******/
+
+#best {
+	margin-top: 20px;
+}
+
+.divider {
+	height: 1px; 
+	background-color: #444444; 
+	text-align: center;
+	margin: 10px;
+}
+
+.divider_label {
+	background-color: #f5fdff; 
+	position: relative; 
+	top: -0.5em; 
+	padding-right: 5px; 
+	padding-left: 5px;
 }
