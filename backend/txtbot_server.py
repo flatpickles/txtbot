@@ -4,7 +4,7 @@ from tornado.ioloop import IOLoop
 
 from flask import Flask, request, redirect, g, jsonify
 from functools import wraps
-from datetime import datetime
+from time import gmtime, strftime
 import twilio.twiml, requests, time, sqlite3, json, hashlib
 
 ### GLOBAL INITIALIZATIONS ETC ###
@@ -172,9 +172,7 @@ def add_entry(entry, origin):
   g.db.commit()
 
 def get_time_s():
-  d = datetime.now()
-  return "[%d/%d %d:%d]" % (d.day, d.month, d.hour, d.minute)
-
+  return strftime("[%m/%d %H:%M]", gmtime())
 ### MAIN ###
 
 if __name__ == "__main__":
