@@ -199,7 +199,7 @@ def cat_entries(id1, id2):
   t2 = cur.fetchone()[0]
   cur.execute("select * from entries where id=?", [id1])
   e1 = cur.fetchone()
-  if not t2 or not e1: return False
+  if not (t2 and e1 and len(t2) == 1 and len(e1) == 4): return False
   g.db.execute('delete from entries where id=? or id=?', [id1, id2])
   g.db.execute('insert into entries (id, text, origin, time) values (?, ?, ?, ?)',
                [e1[0], e1[1] + t2, e1[2], e1[3]])
