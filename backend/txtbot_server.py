@@ -196,7 +196,8 @@ def check_top():
 def cat_entries(id1, id2):
   cur = g.db.cursor()
   cur.execute("select text from entries where id=?", [id2])
-  t2 = cur.fetchone()[0]
+  t2 = cur.fetchone()
+  if t2: t2 = t2[0]
   cur.execute("select * from entries where id=?", [id1])
   e1 = cur.fetchone()
   if not (t2 and e1 and len(t2) == 1 and len(e1) == 4): return False
