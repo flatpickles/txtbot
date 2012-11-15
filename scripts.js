@@ -17,8 +17,15 @@ var BEST = [
 ];
 
 $(document).ready(function() {
-	// set things up
 	$(".body").hide();
+	
+	// check for IE
+	if ($.browser.msie) {
+		$('#nav').hide();
+		return;		
+	}
+
+	// set things up
 	initialize();
 	
 	// update number on hover over subheader
@@ -35,6 +42,7 @@ $(document).ready(function() {
 	
 	// navigation
 	$(".nav").click(function() {
+		if ($(this).hasClass('selected')) return;
 		// nav manipulation
 		$(".nav").removeClass('selected');
 		$(this).addClass('selected');

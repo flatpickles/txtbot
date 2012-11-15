@@ -80,10 +80,6 @@ a:hover {
 	background: #DDFFFF;
 }
 
-#recent_nav {
-
-}
-
 #recent_nav.selected {
 	background: #AAFFAA;
 }
@@ -160,4 +156,11 @@ a:hover {
 	top: -0.5em; 
 	padding-right: 5px; 
 	padding-left: 5px;
+}
+
+/****** OTHER *******/
+
+noscript {
+	color: #FF0000;
+	font-weight: bold;
 }
