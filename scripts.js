@@ -91,7 +91,7 @@ $(document).ready(function() {
 				// insert tag at top
 				if (j == l) {
 					var d = new Date(data[j]['time'] * 1000);
-					var div = get_divider(d.getMonth() + "/" + d.getDate() + "/" + d.getFullYear().toString().substr(2, 4));
+					var div = get_divider((d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear().toString().substr(2, 4));
 					div.insertBefore(e);
 					if (!div.is(':first-child')) div.css('margin-top', '30px');
 				}
