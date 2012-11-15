@@ -57,8 +57,9 @@ def handle_sms():
     return "No data received"
   origin = request.values.get('From', None)
   reply = get_recent(origin) if roulette else get_random()
-  # add it
+  # add it, merge if necessary
   add_entry(txt, origin)
+  check_top()
   # form response
   resp = twilio.twiml.Response()
   if reply:
@@ -128,6 +129,14 @@ def favicon():
   # avoid 404s, return empty
   return ""
 
+@app.route("/test", methods=['GET', 'POST'])
+def favicon():
+  # avoid 404s, return empty
+  if cat_entries(154, 155):
+    return "true"
+  else:
+    return "false"
+
 ### HELPER METHODS ###
 
 def is_valid(s):
@@ -173,6 +182,30 @@ def add_entry(entry, origin):
 
 def get_time_s():
   return strftime("[%m/%d %H:%M]", gmtime())
+
+# checks for possible multiple messages from the same sender w/in a second
+def check_top():
+  cur = g.db.cursor()
+  cur.execute("select id, origin, time from entries order by id desc limit 2")
+  last = cur.fetchall()
+  if last[0][1] == last[1][1] and last[1][2] + 1 >= last[0][2]:
+    return cat_entries(last[1][0], last[0][0])
+  return False
+
+# concatenates the "text" field of two entries, stores back in id1
+def cat_entries(id1, id2):
+  cur = g.db.cursor()
+  cur.execute("select text from entries where id=?", [id2])
+  t2 = cur.fetchone()[0]
+  cur.execute("select * from entries where id=?", [id1])
+  e1 = cur.fetchone()
+  if not t2 or not e1: return False
+  g.db.execute('delete from entries where id=? or id=?', [id1, id2])
+  g.db.execute('insert into entries (id, text, origin, time) values (?, ?, ?, ?)',
+               [e1[0], e1[1] + t2, e1[2], e1[3]])
+  g.db.commit()
+  return True
+
 ### MAIN ###
 
 if __name__ == "__main__":
