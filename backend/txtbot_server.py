@@ -126,16 +126,8 @@ def serve_messages():
 
 @app.route("/favicon.ico", methods=['GET', 'POST'])
 def favicon():
-  # avoid 404s, return empty
+  # avoid 404s with direct requests, return empty
   return ""
-
-@app.route("/test", methods=['GET', 'POST'])
-def favicon():
-  # avoid 404s, return empty
-  if cat_entries(154, 155):
-    return "true"
-  else:
-    return "false"
 
 ### HELPER METHODS ###
 
@@ -200,7 +192,7 @@ def cat_entries(id1, id2):
   if t2: t2 = t2[0]
   cur.execute("select * from entries where id=?", [id1])
   e1 = cur.fetchone()
-  if not (t2 and e1 and len(t2) == 1 and len(e1) == 4): return False
+  if not (t2 and e1): return False
   g.db.execute('delete from entries where id=? or id=?', [id1, id2])
   g.db.execute('insert into entries (id, text, origin, time) values (?, ?, ?, ?)',
                [e1[0], e1[1] + t2, e1[2], e1[3]])
