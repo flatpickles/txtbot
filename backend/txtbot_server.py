@@ -187,15 +187,14 @@ def check_top():
 # concatenates the "text" field of two entries, stores back in id1
 def cat_entries(id1, id2):
   cur = g.db.cursor()
-  cur.execute("select text from entries where id=?", [id2])
-  t2 = cur.fetchone()
-  if t2: t2 = t2[0]
+  cur.execute("select * from entries where id=?", [id2])
+  e2 = cur.fetchone()
   cur.execute("select * from entries where id=?", [id1])
   e1 = cur.fetchone()
-  if not (t2 and e1): return False
+  if not (e2 and e1): return False
   g.db.execute('delete from entries where id=? or id=?', [id1, id2])
   g.db.execute('insert into entries (id, text, origin, time) values (?, ?, ?, ?)',
-               [e1[0], e1[1] + t2, e1[2], e1[3]])
+               [e2[0], e1[1] + e2[1], e2[2], e2[3]])
   g.db.commit()
   return True
 
