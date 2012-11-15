@@ -12,6 +12,7 @@ var loading = true;
 
 // best
 var BEST = [
+	[147, 150],
 	[110, 118],
 	[32, 37]
 ];
