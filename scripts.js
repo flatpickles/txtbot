@@ -12,6 +12,7 @@ var loading = true;
 
 // best
 var BEST = [
+	[179, 180],
 	[147, 150],
 	[110, 118],
 	[32, 37]
@@ -19,28 +20,28 @@ var BEST = [
 
 $(document).ready(function() {
 	$(".body").hide();
-	
+
 	// check for IE
 	if ($.browser.msie) {
 		$('#nav').hide();
-		return;		
+		return;
 	}
 
 	// set things up
 	initialize();
-	
+
 	// update number on hover over subheader
 	$('#subheader').hover(function() {
 		$('#number').html("859-898-2682");
 	}, function() {
 		$('#number').html("859-TXTBOT2");
 	});
-	
+
 	$('#load_more').click(function() {
 		if (loading) return;
 		load_more();
 	});
-	
+
 	// navigation
 	$(".nav").click(function() {
 		if ($(this).hasClass('selected')) return;
@@ -57,7 +58,7 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
 	var i, j, k;
 	for (i = 0; i < BEST.length; i++) {
 		var low = BEST[i][0];
@@ -98,7 +99,7 @@ $(document).ready(function() {
 			}
 		});
 	}
-	
+
 });
 
 function get_divider(contents) {
@@ -109,21 +110,21 @@ function get_divider(contents) {
 
 function initialize() {
 	update_stats();
-	
+
 	// load first n texts
 	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
 		'n': LOAD_NUMBER
 	}, function(data) {
 		$('#loading').remove();
 		$.each(data, load_handler);
-		
+
 		// set to animate in the future
 		slide_in = true;
-		
+
 		$('#recent').fadeIn(FADEIN_DELAY);
 		loading = false;
 	});
-	
+
 	setInterval(check_for_new, CHECK_DELAY);
 };
 
@@ -137,10 +138,10 @@ function load_more() {
 	}, function(data) {
 		$('#loading').remove();
 		$.each(data, load_handler);
-		
+
 		// set to animate in the future
 		slide_in = true;
-		
+
 		loading = false;
 	});
 };
@@ -183,34 +184,34 @@ function load_handler(key, value) {
 function insert_sorted(el, class_type, container) {
 	var all = $(class_type);
 	var curr = 0;
-	
+
 	while (curr < all.length && parseInt(el.attr('id')) < parseInt($(all[curr]).attr('id'))) {
 		curr++;
 	}
-	
+
 	if (slide_in) el.hide();
-	
+
 	if (all.length) {
 		if (all[curr]) el.insertBefore(all[curr]);
 		else $(all[all.length - 1]).next().after(el);
 	} else {
 		el.prependTo(container);
 	}
-	
+
 	if (slide_in) el.slideDown();
-	
+
 	jQuery('<div/>', {
 		class: '.breaker'
-	}).insertAfter(el);	
+	}).insertAfter(el);
 };
 
 function brighten_color(hex, l) {
 	var rgb = "#";
-	var c, i;  
-	for (i = 0; i < 3; i++) {  
-		c = parseInt(hex.substr(i*2,2), 16);  
-		c = Math.round(c + (255 - c) * l).toString(16);  
-		rgb += ("00"+c).substr(c.length);  
-	}  
-	return rgb;  
+	var c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(c + (255 - c) * l).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	}
+	return rgb;
 };
