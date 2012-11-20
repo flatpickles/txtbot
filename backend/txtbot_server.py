@@ -21,7 +21,7 @@ min_length = 3
 voice_output = """
   Thanks for calling text bot! When you send a text message to this number,
   it will be forwarded anonymously to whoever texted directly before you.
-  You will then receive the text from the next person. So hang up, try it out,
+  You will then receive the next person's text. So hang up, give it a shot,
   and see what happens.
   """
 
@@ -140,7 +140,7 @@ def favicon():
 def voice_response():
   print "%s Receiving a phone call?!?!" % get_time_s()
   resp = twilio.twiml.Response()
-  resp.say(voice_output)
+  resp.say(voice_output, language="en-gb", voice="female")
   return str(resp)
 
 ### HELPER METHODS ###
