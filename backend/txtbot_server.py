@@ -18,6 +18,13 @@ offset = 3 # don't publish the most recent texts
 blacklist = ["nichols"]
 min_length = 3
 
+voice_output = """
+  Thanks for calling text bot! When you send a text message to this number,
+  it will be forwarded anonymously to whoever texted directly before you.
+  You will then receive the text from the next person. So hang up, try it out,
+  and see what happens.
+  """
+
 # allow jsonP
 # mostly via https://gist.github.com/1094140
 def jsonp(f):
@@ -128,6 +135,13 @@ def serve_messages():
 def favicon():
   # avoid 404s with direct requests, return empty
   return ""
+
+@app.route("/voice", methods=['GET', 'POST'])
+def voice_response():
+  print "%s Receiving a phone call?!?!" % get_time_s()
+  resp = twilio.twiml.Response()
+  resp.say(voice_output)
+  return str(resp)
 
 ### HELPER METHODS ###
 
