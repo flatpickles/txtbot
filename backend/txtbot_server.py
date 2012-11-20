@@ -21,7 +21,7 @@ min_length = 3
 voice_output = """
   Thanks for calling text bot! When you send a text message to this number,
   it will be forwarded anonymously to whoever texted directly before you.
-  You will then receive the next person's text. So hang up, give it a shot,
+  You will then receive the next person's message. So hang up, give it a shot,
   and see what happens.
   """
 
