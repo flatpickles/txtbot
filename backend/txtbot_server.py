@@ -119,7 +119,7 @@ def serve_messages():
     # hash the number for anonymity
     h = hashlib.sha1()
     h.update(str(row[2]))
-    color = '#' + str(h.hexdigest()[:6])
+    color = '#' + str(h.hexdigest()[-6:])
 
     data[row[0]] = {
       'text': row[1],
