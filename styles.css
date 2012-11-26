@@ -38,6 +38,10 @@ a:hover {
 	margin-right:auto;
 }
 
+#content {
+	display: none;
+}
+
 #loading {
 	color: #A0A0A0;
 }

@@ -19,6 +19,7 @@ var BEST = [
 ];
 
 $(document).ready(function() {
+	$("#content").css('display', 'block');
 	$(".body").hide();
 
 	// check for IE
