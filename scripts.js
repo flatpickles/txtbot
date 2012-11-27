@@ -180,7 +180,6 @@ function load_handler(key, value) {
 	insert_sorted(e, '.msg', '#recent');
 	most_recent = Math.max(most_recent, parseInt(key));
 	lowest_id = Math.min(lowest_id, parseInt(key));
-		console.log($('200').width());
 };
 
 function insert_sorted(el, class_type, container) {
