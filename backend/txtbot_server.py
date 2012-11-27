@@ -11,6 +11,7 @@ import twilio.twiml, requests, time, sqlite3, json, hashlib
 
 DATABASE = "messages.db"
 ROULETTE_DATABASE = "roulette.db"
+JOIN_TIME = 2
 app = Flask(__name__)
 
 roulette = True
@@ -196,7 +197,7 @@ def check_top():
   cur = g.db.cursor()
   cur.execute("select id, origin, time from entries order by id desc limit 2")
   last = cur.fetchall()
-  if last[0][1] == last[1][1] and last[1][2] + 1 >= last[0][2]:
+  if last[0][1] == last[1][1] and last[1][2] + JOIN_TIME >= last[0][2]:
     return cat_entries(last[1][0], last[0][0])
   return False
 
