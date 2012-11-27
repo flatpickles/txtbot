@@ -107,6 +107,7 @@ def serve_messages():
   to_get = int(request.values.get('n', '10'))
   lower_bound = int(request.values.get('after', '-1'))
   upper_bound = int(request.values.get('before', str(latest + 1)))
+  to_get = max(to_get, upper_bound - lower_bound)
   upper_bound = min(latest - offset + 1, upper_bound)
 
   # get data
