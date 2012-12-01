@@ -66,7 +66,7 @@ def handle_sms():
   origin = request.values.get('From', None)
   reply = get_recent(origin) if roulette else get_random()
   # add it, merge if necessary
-  add_entry(txt, origin)
+  if new_message(txt, origin): add_entry(txt, origin)
   check_top()
   # form response
   resp = twilio.twiml.Response()
@@ -147,6 +147,12 @@ def voice_response():
   return str(resp)
 
 ### HELPER METHODS ###
+
+def new_message(txt, origin):
+  cur = g.db.cursor()
+  cur.execute("select text,origin from entries order by id desc limit 1")
+  last = cur.fetchone()
+  return not (last[0] == txt and str(last[1]) == origin)
 
 def is_valid(s):
   # anything goes with roulette
