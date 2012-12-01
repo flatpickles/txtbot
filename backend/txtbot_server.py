@@ -1,3 +1,5 @@
+from util import *
+
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -5,7 +7,9 @@ from tornado.ioloop import IOLoop
 from flask import Flask, request, redirect, g, jsonify
 from functools import wraps
 from time import gmtime, strftime
-import twilio.twiml, requests, time, sqlite3, json, hashlib
+import twilio.twiml, requests, sqlite3, json, hashlib
+
+
 
 ### GLOBAL INITIALIZATIONS ETC ###
 
@@ -64,9 +68,9 @@ def handle_sms():
     print "%s Received malformed request at root" % get_time_s()
     return "No data received"
   origin = request.values.get('From', None)
-  reply = get_recent(origin) if roulette else get_random()
+  reply = get_recent(origin, g.db) if roulette else get_random()
   # add it, merge if necessary
-  if new_message(txt, origin): add_entry(txt, origin)
+  if new_message(txt, origin): add_entry(txt, origin, g.db, roulette)
   check_top()
   # form response
   resp = twilio.twiml.Response()
@@ -154,21 +158,6 @@ def new_message(txt, origin):
   last = cur.fetchone()
   return not (last[0] == txt and str(last[1]) == origin)
 
-def is_valid(s):
-  # anything goes with roulette
-  global roulette
-  if roulette:
-    return True
-  # check if exists in sqlite db
-  cur = g.db.cursor()
-  cur.execute("select case when exists (select * from entries where text=? limit 1) then 1 else 0 end", [entry])
-  duplicate = int(cur.fetchone()[0])
-  # return proper value
-  return not duplicate \
-      and all(ord(c) < 128 for c in s) \
-      and not any(w in s.lower() for w in blacklist) \
-      and len(s) >= min_length
-
 def get_random():
   cur = g.db.cursor()
   # check if table has entries
@@ -180,27 +169,6 @@ def get_random():
   r = str(cur.fetchone()[0])
   return r
 
-def get_recent(origin):
-  cur = g.db.cursor()
-  # check if table has entries
-  cur.execute("select case when exists (select * from entries limit 1) then 1 else 0 end")
-  if not int(cur.fetchone()[0]):
-    return None
-  # get the most recent entry not from origin
-  cur.execute("select text,origin from entries where origin<>? order by id desc limit 1", [origin])
-  e = cur.fetchone()
-  return None if not e else {'text': e[0], 'origin': e[1]}
-
-def add_entry(entry, origin):
-  timestamp = round(time.time())
-  cur = g.db.cursor()
-  if not is_valid(entry):
-    return
-  # add to sqlite DB
-  g.db.execute('insert into entries (text, origin, time) values (?, ?, ?)',
-               [entry, origin, timestamp])
-  g.db.commit()
-
 def get_time_s():
   return strftime("[%m/%d %H:%M]", gmtime())
 
@@ -210,22 +178,8 @@ def check_top():
   cur.execute("select id, origin, time from entries order by id desc limit 2")
   last = cur.fetchall()
   if last[0][1] == last[1][1] and last[1][2] + JOIN_TIME >= last[0][2]:
-    return cat_entries(last[1][0], last[0][0])
+    return cat_entries(last[1][0], last[0][0], g.db)
   return False
-
-# concatenates the "text" field of two entries, stores back in id1
-def cat_entries(id1, id2):
-  cur = g.db.cursor()
-  cur.execute("select * from entries where id=?", [id2])
-  e2 = cur.fetchone()
-  cur.execute("select * from entries where id=?", [id1])
-  e1 = cur.fetchone()
-  if not (e2 and e1): return False
-  g.db.execute('delete from entries where id=? or id=?', [id1, id2])
-  g.db.execute('insert into entries (id, text, origin, time) values (?, ?, ?, ?)',
-               [e2[0], e1[1] + e2[1], e2[2], e2[3]])
-  g.db.commit()
-  return True
 
 ### MAIN ###
 
