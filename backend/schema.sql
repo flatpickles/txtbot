@@ -5,3 +5,12 @@ create table entries (
 	origin string not null,
 	time long not null
 );
+create table best (
+  id integer primary key autoincrement,
+  first integer not null,
+  last integer not null
+);
+create table blocked (
+  id integer primary key autoincrement,
+  num string not null
+);

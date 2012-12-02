@@ -52,6 +52,15 @@ if __name__ == "__main__":
     else:
       print "arguments invalid for sim"
 
+  elif len(sys.argv) > 1 and sys.argv[1] == "block":
+    if len(sys.argv) > 2:
+      remove = False
+      to_block = sys.argv[2]
+      if len(sys.argv) > 3 and sys.argv[3] == "1": remove = True
+      print "blocking %s removing all entries from %s" % ("and" if remove else "and NOT", to_block)
+    else:
+      print "arguments invalid for block"
+
   else:
     print """
       cat id1 id2
