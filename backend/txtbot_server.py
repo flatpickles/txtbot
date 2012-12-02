@@ -79,7 +79,7 @@ def handle_sms():
       resp.sms(txt, to=reply['origin'])
     else:
       resp.sms(reply)
-  print "%s Received SMS: \"%s\", returning with response" % (get_time_s(), str(txt))
+  print "%s Received SMS: \"%s\", returning with response" % (get_time_s(), txt..encode('ascii', 'ignore'))
   return str(resp)
 
 @app.route("/text_count", methods=['GET', 'POST'])
