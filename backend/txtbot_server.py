@@ -9,8 +9,6 @@ from functools import wraps
 from time import gmtime, strftime
 import twilio.twiml, requests, sqlite3, json, hashlib
 
-
-
 ### GLOBAL INITIALIZATIONS ETC ###
 
 DATABASE = "messages.db"
@@ -22,6 +20,10 @@ roulette = True
 offset = 3 # don't publish the most recent texts
 blacklist = ["nichols"]
 min_length = 3
+
+cred_file = open("creds")
+twilio_sid = cred_file.readline().replace('\n', '')
+cred_file.close()
 
 voice_output = """
   Thanks for calling text bot! When you send a text message to this number,
@@ -61,6 +63,11 @@ def teardown(exception):
 
 @app.route("/", methods=['GET', 'POST'])
 def handle_sms():
+  # make sure it's a valid request (from Twilio)
+  if request.values.get('AccountSid', None) != twilio_sid:
+    print "%s Received invalid/non-Twilio request at root" % get_time_s()
+    return "Invalid request."
+  # carry on
   global roulette
   # receive and handle incoming data
   txt = request.values.get('Body', None)

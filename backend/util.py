@@ -53,6 +53,7 @@ def add_entry(entry, origin, db, roulette):
 def send_sms(txt, destination):
   creds_file = open("creds")
   creds = creds_file.read().split("\n")
+  creds_file.close()
   client = TwilioRestClient(creds[0], creds[1])
   message = client.sms.messages.create(to=destination, from_=creds[2], body=txt)
   return message
