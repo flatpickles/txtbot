@@ -133,10 +133,9 @@ def serve_messages():
   # get data
   data = {}
   cur.execute("select * from entries where id > ? and id < ? order by id desc limit ?", [lower_bound, upper_bound, to_get])
-  vals = cur.fetchall()
 
   # parse data
-  for row in vals:
+  for row in cur.fetchall():
     # hash the number for anonymity
     h = hashlib.sha1()
     h.update(str(row[2]))
@@ -150,6 +149,29 @@ def serve_messages():
 
   # return data
   print "%s Returning request for entries" % get_time_s()
+  return jsonify(data)
+
+@app.route("/best", methods=['GET', 'POST'])
+@jsonp
+def serve_best():
+  # get params
+  to_get = int(request.values.get("n", "5"))
+  before = int(request.values.get("before", "-1"))
+  # get data
+  data = {}
+  cur = g.db.cursor()
+  if before == -1:
+    cur.execute("select * from best order by id desc limit ?", [to_get])
+  else:
+    cur.execute("select * from best where id<? order by id desc limit ?", [before, to_get])
+  # parse data
+  for row in cur.fetchall():
+    data[row[0]] = {
+      'first': row[1],
+      'last': row[2]
+    }
+  # return data
+  print "%s Returning request for best" % get_time_s()
   return jsonify(data)
 
 @app.route("/favicon.ico", methods=['GET', 'POST'])
