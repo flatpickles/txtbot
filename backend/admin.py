@@ -5,6 +5,8 @@ ROULETTE_DATABASE = "roulette.db"
 if __name__ == "__main__":
   db = sqlite3.connect(ROULETTE_DATABASE)
   cur = db.cursor()
+
+  #### concatenate texts
   if len(sys.argv) > 1 and sys.argv[1] == "cat":
     # cat id1 id2
     if len(sys.argv) == 4:
@@ -16,6 +18,7 @@ if __name__ == "__main__":
     else:
       print "arguments invalid for cat"
 
+  #### simulate SMS arrival
   elif len(sys.argv) > 1 and sys.argv[1] == "sim":
     # sim txt origin [store] [reply] [reply_to_id]
     if len(sys.argv) > 3:
@@ -52,6 +55,7 @@ if __name__ == "__main__":
     else:
       print "arguments invalid for sim"
 
+  #### block a certain number
   elif len(sys.argv) > 1 and sys.argv[1] == "block":
     if len(sys.argv) > 2:
       remove = False
@@ -67,11 +71,21 @@ if __name__ == "__main__":
     else:
       print "arguments invalid for block"
 
+  #### create an entry in the best table
+  elif len(sys.argv) > 1 and sys.argv[1] == "best":
+    if len(sys.argv) > 3:
+      start = sys.argv[2]
+      end = sys.argv[3]
+      print "marking conversation with entries %s through %s as a best" % (start, end)
+    else:
+      print "arguments invalid for best"
+
   else:
     print """
       cat id1 id2
       sim txt origin [store?] [reply?] [reply_to_id]
       block number [remove]
+      best first last
     """
   # cat_entries(3, 1, db)
   db.close()
