@@ -13,7 +13,8 @@ import twilio.twiml, requests, sqlite3, json, hashlib
 
 DATABASE = "messages.db"
 ROULETTE_DATABASE = "roulette.db"
-JOIN_TIME = 2
+JOIN_TIME = 10
+CONCAT_SMS_LEN = 153
 app = Flask(__name__)
 
 roulette = True
@@ -182,9 +183,11 @@ def get_time_s():
 # checks for possible multiple messages from the same sender w/in a second
 def check_top():
   cur = g.db.cursor()
-  cur.execute("select id, origin, time from entries order by id desc limit 2")
+  cur.execute("select * from entries order by id desc limit 2")
   last = cur.fetchall()
-  if last[0][1] == last[1][1] and last[1][2] + JOIN_TIME >= last[0][2]:
+  if last[0][2] == last[1][2] \
+      and len(last[1][1]) == CONCAT_SMS_LEN \
+      and last[1][3] + JOIN_TIME >= last[0][3]:
     return cat_entries(last[1][0], last[0][0], g.db)
   return False
 
