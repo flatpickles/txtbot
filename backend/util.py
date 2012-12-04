@@ -15,6 +15,11 @@ def is_valid(s, db, roulette):
       and not any(w in s.lower() for w in blacklist) \
       and len(s) >= min_length
 
+def is_blocked(num, db):
+  cur = db.cursor()
+  cur.execute("select COUNT(*) from blocked where num=?", [num])
+  return int(cur.fetchone()[0]) == 1
+
 def get_recent(origin, db):
   cur = db.cursor()
   # check if table has entries

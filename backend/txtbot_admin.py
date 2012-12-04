@@ -4,6 +4,7 @@ ROULETTE_DATABASE = "roulette.db"
 
 if __name__ == "__main__":
   db = sqlite3.connect(ROULETTE_DATABASE)
+  cur = db.cursor()
   if len(sys.argv) > 1 and sys.argv[1] == "cat":
     # cat id1 id2
     if len(sys.argv) == 4:
@@ -44,7 +45,6 @@ if __name__ == "__main__":
           to = get_recent(origin, db)['origin']
         else:
           # send to number of ID specified
-          cur = db.cursor()
           cur.execute("select origin from entries where id=?", [reply_to_id])
           to = cur.fetchone()[0]
         send_sms(txt, to)
@@ -56,8 +56,14 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
       remove = False
       to_block = sys.argv[2]
-      if len(sys.argv) > 3 and sys.argv[3] == "1": remove = True
+      if len(sys.argv) > 3 and sys.argv[3] == "remove": remove = True
       print "blocking %s removing all entries from %s" % ("and" if remove else "and NOT", to_block)
+      # add to blocked table
+      cur.execute("insert into blocked (num) values (?)", [to_block])
+      # remove entries if need be
+      if remove:
+        cur.execute("delete from entries where origin=?", [to_block])
+      db.commit()
     else:
       print "arguments invalid for block"
 
@@ -65,6 +71,7 @@ if __name__ == "__main__":
     print """
       cat id1 id2
       sim txt origin [store?] [reply?] [reply_to_id]
+      block number [remove]
     """
   # cat_entries(3, 1, db)
   db.close()

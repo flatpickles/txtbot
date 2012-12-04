@@ -76,6 +76,11 @@ def handle_sms():
     print "%s Received malformed request at root" % get_time_s()
     return "No data received"
   origin = request.values.get('From', None)
+  # reject if blocked
+  if origin and is_blocked(origin, g.db):
+    print "%s Received text from blocked number: %s" % (get_time_s(), origin)
+    return "BLOCKED"
+  # yup
   reply = get_recent(origin, g.db) if roulette else get_random()
   # add it, merge if necessary
   if new_message(txt, origin): add_entry(txt, origin, g.db, roulette)
