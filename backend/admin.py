@@ -74,9 +74,11 @@ if __name__ == "__main__":
   #### create an entry in the best table
   elif len(sys.argv) > 1 and sys.argv[1] == "best":
     if len(sys.argv) > 3:
-      start = sys.argv[2]
-      end = sys.argv[3]
-      print "marking conversation with entries %s through %s as a best" % (start, end)
+      first = sys.argv[2]
+      last = sys.argv[3]
+      print "marking entries %s through %s as a best" % (first, last)
+      cur.execute("insert into best (first, last) values (?, ?)", [first, last])
+      db.commit()
     else:
       print "arguments invalid for best"
 
