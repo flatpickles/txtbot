@@ -76,17 +76,18 @@ def handle_sms():
     print "%s Received malformed request at root" % get_time_s()
     return "No data received"
   origin = request.values.get('From', None)
+  resp = twilio.twiml.Response()
   # reject if blocked
   if origin and is_blocked(origin, g.db):
     print "%s Received text from blocked number: %s" % (get_time_s(), origin)
-    return "BLOCKED"
+    resp.sms("Your number has been blocked on account of shenanigans. Please email support@txtbot.me if you've got beef.")
+    return str(resp)
   # yup
   reply = get_recent(origin, g.db) if roulette else get_random()
   # add it, merge if necessary
   if new_message(txt, origin): add_entry(txt, origin, g.db, roulette)
   check_top()
   # form response
-  resp = twilio.twiml.Response()
   if reply:
     if roulette:
       resp.sms(txt, to=reply['origin'])
