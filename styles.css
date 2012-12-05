@@ -111,6 +111,20 @@ a:hover {
 	background: #DDDDFF;
 }
 
+.load {
+	border: 3px solid #0000FF;
+	background: #EEEEFF;
+	font-weight: bold;
+	cursor: pointer;
+	display: inline-block;
+	color: #0000ff;
+}
+
+.load:hover {
+	background: #CCCCFF;
+	text-decoration: underline;
+}
+
 /****** WTF BODY ******/
 
 #wtf {
@@ -127,28 +141,15 @@ a:hover {
 	-moz-border-radius: 20px;
 }
 
-#load_more {
-	border: 3px solid #0000FF;
-	background: #EEEEFF;
-	font-weight: bold;
-	cursor: pointer;
-	display: inline-block;
-	color: #0000ff;
-}
-
-#load_more:hover {
-	background: #CCCCFF;
-	text-decoration: underline;
-}
-
 .breaker {
 	clear: both;
 }
 
 /****** BEST BODY ******/
 
-#best {
+.best {
 	margin-top: 20px;
+	padding-bottom: 10px;
 }
 
 .divider {
@@ -164,6 +165,10 @@ a:hover {
 	top: -0.5em; 
 	padding-right: 5px; 
 	padding-left: 5px;
+}
+
+#load_more_best {
+	margin-top: 10px;
 }
 
 /****** OTHER *******/
