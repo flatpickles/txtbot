@@ -148,8 +148,9 @@ def serve_messages():
     }
 
   # indicate if there's more to load after this
-  cur.execute('select case when exists (select * from entries where id<? limit 1) then 1 else 0 end', [min(data.keys())])
-  data['more'] = cur.fetchone()[0]
+  if data.keys():
+    cur.execute('select case when exists (select * from entries where id<? limit 1) then 1 else 0 end', [min(data.keys())])
+    data['more'] = cur.fetchone()[0]
 
   # return data
   print "%s Returning request for entries" % get_time_s()
@@ -178,8 +179,9 @@ def serve_best():
     }
 
   # indicate if there's more to load after this
-  cur.execute('select case when exists (select * from best where id<? limit 1) then 1 else 0 end', [min(data.keys())])
-  data['more'] = cur.fetchone()[0]
+  if data.keys():
+    cur.execute('select case when exists (select * from best where id<? limit 1) then 1 else 0 end', [min(data.keys())])
+    data['more'] = cur.fetchone()[0]
 
   # return data
   print "%s Returning request for best" % get_time_s()
