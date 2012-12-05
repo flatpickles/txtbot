@@ -73,6 +73,12 @@ function load_best(is_first) {
 	}, function(data) {
 		// call add_best_entry for each result returned
 		$.each(data, function(k, v) {
+			// hide the load more if there's no more to load
+			if (k == "more") {
+				if (!v) $("#load_more_best").hide();
+				return;
+			}
+			// normal case...
 			add_best_entry(v['first'], v['last'], k);
 		});
 	});
@@ -182,6 +188,11 @@ function update_stats() {
 };
 
 function load_handler(key, value) {
+	// hide the load more if there's no more to load
+	if (key == 'more') {
+		if (!value) $("#load_more").hide();
+		return;
+	}
 	// create an element for the new message
 	var e = jQuery('<div/>', {
 		id: key,

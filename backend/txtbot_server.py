@@ -147,6 +147,10 @@ def serve_messages():
       'time': row[3]
     }
 
+  # indicate if there's more to load after this
+  cur.execute('select case when exists (select * from entries where id<? limit 1) then 1 else 0 end', [min(data.keys())])
+  data['more'] = cur.fetchone()[0]
+
   # return data
   print "%s Returning request for entries" % get_time_s()
   return jsonify(data)
@@ -157,6 +161,7 @@ def serve_best():
   # get params
   to_get = int(request.values.get("n", "5"))
   before = int(request.values.get("before", "-1"))
+
   # get data
   data = {}
   cur = g.db.cursor()
@@ -164,12 +169,18 @@ def serve_best():
     cur.execute("select * from best order by id desc limit ?", [to_get])
   else:
     cur.execute("select * from best where id<? order by id desc limit ?", [before, to_get])
+
   # parse data
   for row in cur.fetchall():
     data[row[0]] = {
       'first': row[1],
       'last': row[2]
     }
+
+  # indicate if there's more to load after this
+  cur.execute('select case when exists (select * from best where id<? limit 1) then 1 else 0 end', [min(data.keys())])
+  data['more'] = cur.fetchone()[0]
+
   # return data
   print "%s Returning request for best" % get_time_s()
   return jsonify(data)
