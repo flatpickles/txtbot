@@ -37,6 +37,9 @@ $(document).ready(function() {
 	// check for IE
 	if ($.browser.msie) {
 		$('#nav').hide();
+		$('#loading').hide();
+		$('#ie_msg').show();
+		update_stats();
 		return;
 	}
 
@@ -72,48 +75,53 @@ $(document).ready(function() {
 		});
 	});
 
-	var i, j, k;
+	var i;
 	for (i = 0; i < BEST.length; i++) {
 		var low = BEST[i][0];
-		var up = BEST[i][1];
-		// load first n texts
-		$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
-			'after': low - 1,
-			'before': up + 1
-		}, function(data) {
-			// find min + max of keys
-			var l, u;
-			var keys = Object.keys(data);
-			for (k = 0; k < keys.length; k++) {
-				if (!l || parseInt(keys[k]) < l) l = keys[k];
-				if (!u || parseInt(keys[k]) > u) u = keys[k];
-			}
-			// add all elements in list
-			var last;
-			for (j = l; j <= u; j++) {
-				if (!data[j]) continue;
-				var e = jQuery('<div/>', {
-					id: j.toString() + '_best',
-					text: data[j]['text']
-				}).addClass('msg');
-				e.css('border', '3px solid ' + data[j]['color']);
-				e.css('background', brighten_color(data[j]['color'].substring(1), .77));
-				e.appendTo('#best');
-				jQuery('<div/>', {
-					class: '.breaker'
-				}).insertAfter(e);
-				// insert tag at top
-				if (j == l) {
-					var d = new Date(data[j]['time'] * 1000);
-					var div = get_divider((d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear().toString().substr(2, 4));
-					div.insertBefore(e);
-					if (!div.is(':first-child')) div.css('margin-top', '30px');
-				}
-			}
-		});
+		var high = BEST[i][1];
+		add_best_entry(low, high);
 	}
 
 });
+
+function add_best_entry(low, high) {
+	// load first n texts
+	var j, k;
+	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+		'after': low - 1,
+		'before': high + 1
+	}, function(data) {
+		// find min + max of keys
+		var l, u;
+		var keys = Object.keys(data);
+		for (k = 0; k < keys.length; k++) {
+			if (!l || parseInt(keys[k]) < l) l = keys[k];
+			if (!u || parseInt(keys[k]) > u) u = keys[k];
+		}
+		// add all elements in list
+		var last;
+		for (j = l; j <= u; j++) {
+			if (!data[j]) continue;
+			var e = jQuery('<div/>', {
+				id: j.toString() + '_best',
+				text: data[j]['text']
+			}).addClass('msg');
+			e.css('border', '3px solid ' + data[j]['color']);
+			e.css('background', brighten_color(data[j]['color'].substring(1), .77));
+			e.appendTo('#best');
+			jQuery('<div/>', {
+				class: '.breaker'
+			}).insertAfter(e);
+			// insert tag at top
+			if (j == l) {
+				var d = new Date(data[j]['time'] * 1000);
+				var div = get_divider((d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear().toString().substr(2, 4));
+				div.insertBefore(e);
+				if (!div.is(':first-child')) div.css('margin-top', '30px');
+			}
+		}
+	});
+}
 
 function get_divider(contents) {
 	var c = jQuery('<div/>').addClass('divider');
