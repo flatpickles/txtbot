@@ -82,12 +82,20 @@ if __name__ == "__main__":
     else:
       print "arguments invalid for best"
 
+  #### easily print out the last 10 posts
+  elif len(sys.argv) > 1 and sys.argv[1] == "latest":
+    n = 10 if len(sys.argv) < 3 else sys.argv[2]
+    cur.execute("select * from entries order by id desc limit ?", [n])
+    for l in cur.fetchall():
+      print "%d\t%d\t%s\t%s" % (l[0], l[2], l[3], l[1])
+
   else:
     print """
       cat id1 id2
       sim txt origin [store?] [reply?] [reply_to_id]
       block number [remove]
       best first last
+      latest [number]
     """
   # cat_entries(3, 1, db)
   db.close()
