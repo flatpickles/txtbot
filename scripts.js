@@ -206,9 +206,6 @@ function load_handler(key, value) {
 	insert_sorted(e, '.msg', '#recent', '', false);
 	most_recent = Math.max(most_recent, parseInt(key));
 	lowest_id = Math.min(lowest_id, parseInt(key));
-	// adjust size
-	e.load(console.log($('#' + key).attr('size')));
-	
 };
 
 function insert_sorted(el, class_type, container, id_prepend, no_slide) {
