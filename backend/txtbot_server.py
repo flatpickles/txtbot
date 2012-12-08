@@ -227,7 +227,7 @@ def check_top():
   cur.execute("select * from entries order by id desc limit 2")
   last = cur.fetchall()
   if last[0][2] == last[1][2] \
-      and len(last[1][1]) % CONCAT_SMS_LEN == 0 \
+      and len(str(last[1][1])) % CONCAT_SMS_LEN == 0 \
       and last[1][3] + JOIN_TIME >= last[0][3]:
     return cat_entries(last[1][0], last[0][0], g.db)
   return False
