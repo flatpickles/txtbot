@@ -67,7 +67,7 @@ $(document).ready(function() {
 });
 
 function load_best(is_first) {
-	$.getJSON("http://mattnichols.net:6288/best?callback=?", {
+	$.getJSON("http://nichols.in:6288/best?callback=?", {
 		'n': BEST_LOAD_NUMBER,
 		'before': is_first ? -1 : oldest_best
 	}, function(data) {
@@ -95,7 +95,7 @@ function add_best_entry(low, high, id) {
 	// insert sorted among other best entries
 	insert_sorted(best_el, ".best", "#best", "best_", true)
 	// load in best texts
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+	$.getJSON("http://nichols.in:6288/entries?callback=?", {
 		'after': low - 1,
 		'before': high + 1
 	}, function(data) {
@@ -134,7 +134,7 @@ function get_divider(contents) {
 function initialize() {
 	update_stats();
 	// load first n texts
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+	$.getJSON("http://nichols.in:6288/entries?callback=?", {
 		'n': LOAD_NUMBER
 	}, function(data) {
 		$('#loading').remove();
@@ -153,7 +153,7 @@ function load_more() {
 	slide_in = false;
 	// load n texts before last displayed
 	loading = true;
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+	$.getJSON("http://nichols.in:6288/entries?callback=?", {
 		'n': LOAD_NUMBER,
 		'before': lowest_id
 	}, function(data) {
@@ -166,7 +166,7 @@ function load_more() {
 };
 
 function check_for_new() {
-	$.getJSON("http://mattnichols.net:6288/entries?callback=?", {
+	$.getJSON("http://nichols.in:6288/entries?callback=?", {
 		'n': 10,
 		'after': most_recent
 	}, function(data) {
@@ -178,11 +178,11 @@ function check_for_new() {
 
 function update_stats() {
 	// load number of texts
-	$.getJSON("http://mattnichols.net:6288/text_count?callback=?", function(data) {
+	$.getJSON("http://nichols.in:6288/text_count?callback=?", function(data) {
 		$('#num_texts').html(data['count']);
 	});
 	// and number of numbers
-	$.getJSON("http://mattnichols.net:6288/number_count?callback=?", function(data) {
+	$.getJSON("http://nichols.in:6288/number_count?callback=?", function(data) {
 		$('#num_numbers').html(data['count']);
 	});
 };
